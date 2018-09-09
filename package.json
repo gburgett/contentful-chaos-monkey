@@ -2,10 +2,20 @@
   "name": "contentful-chaos-monkey",
   "version": "0.1.0",
   "description": "A testing tool which changes random things in Contentful and validates your app via configured previews.",
-  "main": "index",
+  "main": "dist/main.js",
+  "bin": {
+    "contentful-schema-diff": "bin/index.js"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "prepare": "npm run build",
+    "start": "ts-node src/index.ts"
   },
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^10.9.4",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.0.3"
+  }
 }
