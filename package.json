@@ -1,0 +1,11 @@
+{
+  "name": "contentful-chaos-monkey",
+  "version": "0.1.0",
+  "description": "A testing tool which changes random things in Contentful and validates your app via configured previews.",
+  "main": "index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
