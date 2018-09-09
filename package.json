@@ -11,12 +11,19 @@
     "fix": "tslint --fix src/**/*.ts",
     "build": "tsc",
     "prepare": "npm run build",
-    "start": "ts-node src/index.ts"
+    "start": "ts-node src/index.ts",
+    "test": "mocha --require ts-node/register src/**/*.test.ts",
+    "test-watch": "nodemon --watch src/ -e ts --exec 'npm run test || echo \"Tests failed!\"'"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^4.1.4",
+    "@types/mocha": "^5.2.5",
     "@types/node": "^10.9.4",
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.4",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
     "tslint-eslint-rules": "^5.4.0",
