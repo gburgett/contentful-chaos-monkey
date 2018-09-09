@@ -1,6 +1,7 @@
 export interface IArgs {
+  logger: (msg: string) => any
 }
 
 export default async function Run(args: IArgs) {
-  console.log('hello world!')
+  args.logger('Hello World!')
 }

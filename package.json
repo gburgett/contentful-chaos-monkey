@@ -7,6 +7,8 @@
     "contentful-schema-diff": "bin/index.js"
   },
   "scripts": {
+    "lint": "tslint src/**/*.ts",
+    "fix": "tslint --fix src/**/*.ts",
     "build": "tsc",
     "prepare": "npm run build",
     "start": "ts-node src/index.ts"
@@ -16,6 +18,8 @@
   "devDependencies": {
     "@types/node": "^10.9.4",
     "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.0.3"
   }
 }
