@@ -1,7 +1,9 @@
+import { ILogger } from './logger'
+
 export interface IArgs {
-  logger: (msg: string) => any
+  logger: ILogger
 }
 
-export default async function Run(args: IArgs) {
-  args.logger('Hello World!')
+export default async function Run(args: IArgs): Promise<number | void> {
+  args.logger.debug('Hello World!')
 }
