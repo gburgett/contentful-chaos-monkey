@@ -11,17 +11,20 @@ const argv = yargs
   })
   .argv
 
-let logger = DefaultLogger
-if (argv.verbose) {
-  logger = VerboseLogger
+const defaultArgs = {
+  logger: DefaultLogger,
+  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
 }
 
-Run({
-  logger,
-})
+if (argv.verbose) {
+  defaultArgs.logger = VerboseLogger
+}
+
+Run(Object.assign(defaultArgs, argv))
   .then((code) => {
     process.exit(code || 0)
   })
   .catch((err) => {
-    logger.error(err)
+    defaultArgs.logger.error(err)
+    process.exit(-1)
   })
