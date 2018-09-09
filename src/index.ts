@@ -9,11 +9,20 @@ const argv = yargs
     alias: 'v',
     description: 'Print log output to stderr',
   })
+  .option('space', {
+    alias: 's',
+    description: 'The space to work in',
+  })
+  .option('token', {
+    alias: 'a',
+    description: 'A Contentful management token to download content from a space',
+  })
   .argv
 
 const defaultArgs = {
   logger: DefaultLogger,
-  accessToken: process.env.CONTENTFUL_ACCESS_TOKEN,
+  managementToken: process.env.CONTENTFUL_MANAGEMENT_TOKEN,
+  space: process.env.CONTENTFUL_SPACE_ID,
 }
 
 if (argv.verbose) {

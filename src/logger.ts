@@ -15,27 +15,15 @@ const emptyLogFn = () => (msg: string, ...optionalParams: any[]) => {
 }
 
 const debugLogFn = (msg: string, ...optionalParams: any[]) => {
-  if (optionalParams.length > 0) {
-    console.log(chalk.gray(msg), optionalParams)
-  } else {
-    console.log(chalk.gray(msg))
-  }
+  console.log(chalk.gray(msg), ...optionalParams)
 }
 
 const infoLogFn = (msg: string, ...optionalParams: any[]) => {
-  if (optionalParams.length > 0) {
-    console.log(msg, optionalParams)
-  } else {
-    console.log(msg)
-  }
+  console.log(msg, ...optionalParams)
 }
 
 const errorLogFn = (msg: string, ...optionalParams: any[]) => {
-  if (optionalParams.length > 0) {
-    console.log(chalk.red(msg), optionalParams)
-  } else {
-    console.log(chalk.red(msg))
-  }
+  console.log(chalk.red(msg), ...optionalParams)
 }
 
 export const DefaultLogger: ILogger = Object.assign(
