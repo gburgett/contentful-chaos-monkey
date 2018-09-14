@@ -14,8 +14,8 @@ declare module 'contentful-management' {
   }): IManagementClient
 
   export interface IManagementClient {
-    getSpace(id: string): Promise<any>
-    getSpaces(): Promise<any>
+    getSpace(id: string): Promise<Space>
+    getSpaces(): Promise<SpaceCollection>
     createSpace(data: any, organizationId?: string): Promise<any>
     createPersonalAccessToken(data: any): Promise<any>
     getCurrentUser(): Promise<any>
@@ -30,13 +30,18 @@ declare module 'contentful-management' {
     skip: number
     limit: number
     items: Space[]
-    toPlainObject(): any[]
+    toPlainObject(): ISpace[]
   }
 
-  export class Space {
-    sys: any
+  export interface ISpace {
+    sys: ISys<'space'>
     name: string
-    toPlainObject(): any
+  }
+
+  export class Space implements ISpace {
+    sys: ISys<'space'>
+    name: string
+    toPlainObject(): ISpace
 
     delete(...params: any[]): Promise<any> 	
     update(...params: any[]): Promise<any> 	
@@ -48,8 +53,19 @@ declare module 'contentful-management' {
     getContentTypes(...params: any[]): Promise<any> 	
     createContentType(...params: any[]): Promise<any> 	
     createContentTypeWithId(...params: any[]): Promise<any> 	
-    getEntry(...params: any[]): Promise<any> 	
-    getEntries(...params: any[]): Promise<any> 	
+
+    /**
+     * Gets an Entry
+     * 
+     * Warning: if you are using the select operator, when saving, any field that was not selected will be removed from your entry in the backend
+     */
+    getEntry(id: string, query?: JsonObject): Promise<Entry<any>>
+    /**
+     * Gets a collection of Entries
+     * 
+     * @param query Object with search parameters. Check the JS SDK tutorial and the REST API reference for more details.
+     */
+    getEntries(query?: JsonObject): Promise<EntryCollection> 	
     createEntry(...params: any[]): Promise<any> 	
     createEntryWithId(...params: any[]): Promise<any> 	
     getAsset(...params: any[]): Promise<any> 	
@@ -81,5 +97,74 @@ declare module 'contentful-management' {
     createUiExtensionWithId(...params: any[]): Promise<any> 	
     getEntrySnapshots(...params: any[]): Promise<any> 	
     getContentTypeSnapshots(...params: any[]): Promise<any>
+  }
+
+  // tslint:disable-next-line:interface-over-type-literal
+  export type JsonObject = { [k: string]: any }
+
+  export interface IEntry<TFields extends JsonObject> {
+    sys: EntrySys,
+    fields: TFields
+  }
+
+  export class Entry<TFields extends JsonObject> implements IEntry<TFields> {
+    public readonly sys: EntrySys
+    public readonly fields: TFields
+
+    public toPlainObject(): IEntry<TFields>
+  }
+
+  export class EntryCollection {
+    total: number
+    skip: number
+    limit: number
+    items: Entry<any>[]
+  }
+
+  export interface IAsset {
+    sys: ISys<'Asset'>,
+    fields: {
+      title?: string,
+      description?: string,
+      file: {
+        url?: string,
+        details?: {
+          size?: number,
+        },
+        fileName?: string,
+        contentType?: string,
+      },
+    }
+  }
+
+
+  export class Asset implements IAsset {
+    public readonly sys: ISys<'Asset'>
+    public readonly fields: IAsset['fields']
+
+    public toPlainObject(): IAsset
+  }
+
+  export interface ILink<Type extends string> {
+    sys: {
+      type: 'Link',
+      linkType: Type,
+      id: string,
+    },
+  }
+
+  export interface ISys<Type extends string> {
+    space: ILink<'Space'>,
+    id: string,
+    type: Type,
+    environment?: ILink<'Environment'>,
+    createdAt?: string,
+    updatedAt?: string,
+    revision?: number,
+  }
+
+  type EntrySys = ISys<'Entry'> & { 
+    contentType?: ILink<'ContentType'>
+    locale?: string
   }
 }
