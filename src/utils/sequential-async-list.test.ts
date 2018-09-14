@@ -38,6 +38,42 @@ describe('SequentialAsyncList', () => {
       ])
       expect(after - before).to.be.greaterThan(605) // 100 + 90 + 80 + ...
     })
+
+    it('can flatMap to an array', async () => {
+      const values = [0, 1, 2]
+      const subject = SequentialAsyncList.lift(values)
+      const result = subject.flatMap(async (x) => {
+        return upTo(x)
+      })
+
+      expect(await result.all()).to.deep.eq([
+        0,
+        0, 1,
+        0, 1, 2,
+      ])
+    })
+
+    it('can flatMap to an array of promises of arrays', async () => {
+      const values = [1, 2, 3]
+      const subject = SequentialAsyncList.lift(values)
+      const result = subject.flatMap((x) => {
+        return upTo(x).map(async (x2) => (
+          upTo(x2)
+        ))
+      })
+
+      expect(await result.all()).to.deep.eq([
+        0,
+        0, 1,
+        0,
+        0, 1,
+        0, 1, 2,
+        0,
+        0, 1,
+        0, 1, 2,
+        0, 1, 2, 3,
+      ])
+    })
   })
 
   describe('reduce', () => {
@@ -64,3 +100,11 @@ describe('SequentialAsyncList', () => {
     })
   })
 })
+
+function upTo(n: number): number[] {
+  const arr = [] as number[]
+  for (let i = 0; i <= n; i++) {
+    arr.push(i)
+  }
+  return arr
+}

@@ -1,5 +1,6 @@
 
 type NotPromise<T> = Exclude<T, Promise<any>>
+type BindResult<U> = Array<Promise<U[]>> | Array<Promise<U>> | Promise<U[]> | Promise<U>
 
 /**
  * A Monadic representation of a list of promises, exposing functions to
@@ -8,8 +9,11 @@ type NotPromise<T> = Exclude<T, Promise<any>>
  * get with Promise.all(arr.map(async () => {}))
  */
 export default class SequentialAsyncList<T> {
-  public static lift<T>(items: T[]) {
-    return new SequentialAsyncList<T>(Promise.resolve(items))
+  public static lift<T>(items: T[] | Promise<T[]>) {
+    if (Array.isArray(items)) {
+      return new SequentialAsyncList<T>(Promise.resolve(items))
+    }
+    return new SequentialAsyncList<T>(items)
   }
 
   private constructor(private promises: Promise<T[]>) { }
@@ -20,7 +24,7 @@ export default class SequentialAsyncList<T> {
    * The function is only invoked after the promise from the previous function completes.
    */
   // monad bind
-  public flatMap<U>(fn: (item: T, index?: number) => Promise<U> | Array<Promise<U>>): SequentialAsyncList<U> {
+  public flatMap<U>(fn: (item: T, index?: number) => BindResult<U>): SequentialAsyncList<U> {
     return new SequentialAsyncList<U>(
       this._bind(fn),
     )
@@ -70,21 +74,31 @@ export default class SequentialAsyncList<T> {
    *
    * Applies the transform function after all promises from prior transformations have finished.
    */
-  private async _bind<U>(fn: (item: T, index?: number) => Promise<U> | Array<Promise<U>>): Promise<U[]> {
-    const arr = (await this.promises)
+  private async _bind<U>(
+    fn: (item: T, index?: number) => BindResult<U>,
+    ): Promise<U[]> {
 
+    const arr = (await this.promises)
     const result = [] as U[]
     for (let i = 0; i < arr.length; i++) {
-      const xformed = fn(arr[i], i)
+      const output = fn(arr[i], i)
       // await all the resulting transformations before executing the next one
-      if (Array.isArray(xformed)) {
-        for (const v of xformed) {
-          result.push(await v)
+      if (Array.isArray(output)) {
+        for (const v of output) {
+          push(result, await v)
         }
       } else {
-        result.push(await xformed)
+        push(result, await output)
       }
     }
     return result
+  }
+}
+
+function push<U>(arr: U[], val: U | U[]) {
+  if (Array.isArray(val)) {
+    arr.push(...val)
+  } else {
+    arr.push(val)
   }
 }
