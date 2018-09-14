@@ -52,7 +52,7 @@ describe('PreviewValidator', () => {
         const subject = new PreviewValidator({ client: client as any, space: 'testspace' })
 
         // act
-        const expectations = await subject.buildExpectations(fakeEntry({ slug: 'some-slug' }))
+        const expectations = await subject.buildExpectations(fakeEntry({ slug: { 'en-US': 'some-slug' } }))
 
         expect(expectations).to.have.length(1)
         const exp = expectations[0] as PreviewExpectation
@@ -85,7 +85,7 @@ describe('PreviewValidator', () => {
           .reply(201)
 
         const subject = new PreviewValidator({ client: client as any, space: 'testspace' })
-        const expectations = await subject.buildExpectations(fakeEntry({ slug: 'some-slug' }))
+        const expectations = await subject.buildExpectations(fakeEntry({ slug: { 'en-US': 'some-slug' } }))
 
         // act
         const exp = expectations[0] as PreviewExpectation
@@ -119,7 +119,7 @@ describe('PreviewValidator', () => {
           .reply(500)
 
         const subject = new PreviewValidator({ client: client as any, space: 'testspace' })
-        const expectations = await subject.buildExpectations(fakeEntry({ slug: 'some-slug' }))
+        const expectations = await subject.buildExpectations(fakeEntry({ slug: { 'en-US': 'some-slug' } }))
 
         // act
         const exp = expectations[0] as PreviewExpectation
@@ -172,7 +172,7 @@ describe('PreviewValidator', () => {
 
         // act
         const expectations = await subject.buildExpectations(
-          fakeEntry({ slug: 'some-slug', title: 'SomeTitle' }),
+          fakeEntry({ slug: { 'en-US': 'some-slug' }, title: { 'en-US': 'SomeTitle' } }),
         )
 
         expect(expectations).to.have.length(2)

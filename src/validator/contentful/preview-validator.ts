@@ -79,7 +79,7 @@ export default class PreviewValidator implements IValidator {
 
     const generators = previews.map((p) => (entry: IEntry<any>) => (
       p.url.replace(fieldsRegexp, (substr, field) => (
-        entry.fields[field]
+        entry.fields[field] && entry.fields[field]['en-US']
       ))
     ))
     return (this.previewMap[contentType] = generators)
