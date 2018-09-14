@@ -4,8 +4,9 @@ import {DefaultLogger, VerboseLogger} from './logger'
 import Run from './main'
 
 const argv = yargs
-  .usage('$0 --from <export file or space> --to <export file or space>')
+  .usage('$0 <id>')
   .option('verbose', {
+    boolean: true,
     alias: 'v',
     description: 'Print log output to stderr',
   })
@@ -29,7 +30,9 @@ if (argv.verbose) {
   defaultArgs.logger = VerboseLogger
 }
 
-Run(Object.assign(defaultArgs, argv))
+const finalArgs = Object.assign(defaultArgs, argv, { targets: argv._ })
+
+Run(finalArgs)
   .then((code) => {
     process.exit(code || 0)
   })

@@ -2,6 +2,7 @@ import { IEntry, IManagementClient } from 'contentful-management'
 import * as _ from 'lodash'
 import * as requestLib from 'request'
 import { Response } from 'request'
+import { ILogger } from '../../logger'
 import { AsyncRequest } from '../../utils/async-request'
 import SequentialAsyncList from '../../utils/sequential-async-list'
 import { IExpectation, IValidator } from '../types'
@@ -9,6 +10,8 @@ import { IExpectation, IValidator } from '../types'
 interface IOptions {
   client: IManagementClient
   space: string
+
+  logger?: ILogger
 }
 
 const fieldsRegexp = /\{entry\.fields\.([^\}]+)\}/
@@ -20,12 +23,14 @@ const request = AsyncRequest(requestLib)
 export default class PreviewValidator implements IValidator {
   private readonly client: IManagementClient
   private readonly space: string
+  private readonly logger: ILogger
 
   private readonly previewMap: { [ct: string]: PreviewUrlGenerator[] } = {}
 
-  constructor({ client, space }: IOptions) {
+  constructor({ client, space, logger }: IOptions) {
     this.client = client
     this.space = space
+    this.logger = logger
 
     this.getPreviewUrls = this.getPreviewUrls.bind(this)
   }
@@ -36,7 +41,11 @@ export default class PreviewValidator implements IValidator {
     return await SequentialAsyncList.lift(generators)
       .flatMap(async (g) => {
         const url = g(entry)
+        this.logger.debug(`GET ${url}`)
         const resp = await request.get(url)
+        if (resp.statusCode >= 500) {
+          this.logger.error(`${resp.statusCode} when inspecting`, url)
+        }
 
         return new PreviewExpectation(url, entry, resp)
       }).all()
@@ -47,12 +56,14 @@ export default class PreviewValidator implements IValidator {
       return this.previewMap[contentType]
     }
 
+    this.logger.debug(`GET /${this.space}/preview_environments?limit=100`)
     const resp: IPreviewEnvironmentsResp = await this.client.rawRequest({
       method: 'GET',
       url: `/${this.space}/preview_environments?limit=100`,
     })
 
     if (resp.items.length <= 0) {
+      this.logger.error(`No previews configured in space`, this.space)
       return []
     }
 
@@ -61,6 +72,10 @@ export default class PreviewValidator implements IValidator {
         c.enabled && c.contentType == contentType && c.url && c.url.length > 0
       )),
     )
+
+    if (previews.length <= 0) {
+      this.logger.info(`No active preview configurations found for content type`, contentType)
+    }
 
     const generators = previews.map((p) => (entry: IEntry<any>) => (
       p.url.replace(fieldsRegexp, (substr, field) => (
