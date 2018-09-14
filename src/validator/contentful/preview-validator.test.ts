@@ -3,13 +3,14 @@ import { expect } from 'chai'
 import * as nock from 'nock'
 import * as sinon from 'sinon'
 
-import { wait } from '../utils'
-import {fakeEntry} from '../utils/fake-contentful'
+import { wait } from '../../utils'
+import {fakeEntry} from '../../utils/fake-contentful'
 
-import PreviewValidator, { IPreviewEnvironmentsResp, PreviewExpectation } from './preview-validator'
+import PreviewValidator, { IPreviewEnvironmentsResp, PreviewExpectation } from '../preview-validator'
 
 // tslint:disable:no-unused-expression
 
+describe('validator/contentful', () => {
 describe('PreviewValidator', () => {
   describe('buildExpectations', () => {
     context('no preview URLs', () => {
@@ -187,4 +188,5 @@ describe('PreviewValidator', () => {
       })
     })
   })
+})
 })

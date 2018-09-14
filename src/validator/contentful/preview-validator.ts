@@ -2,9 +2,9 @@ import { IEntry, IManagementClient } from 'contentful-management'
 import * as _ from 'lodash'
 import * as requestLib from 'request'
 import { Response } from 'request'
-import { AsyncRequest } from '../utils/async-request'
-import SequentialAsyncList from '../utils/sequential-async-list'
-import { IExpectation, IValidator } from './types'
+import { AsyncRequest } from '../../utils/async-request'
+import SequentialAsyncList from '../../utils/sequential-async-list'
+import { IExpectation, IValidator } from '../types'
 
 interface IOptions {
   client: IManagementClient
