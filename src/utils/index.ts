@@ -4,3 +4,7 @@ export function wait(ms: number): Promise<void> {
     setTimeout(() => resolve(), ms),
   )
 }
+
+export type AsyncMap<T extends { [key: string]: any }> = {
+  [k in keyof T]: Promise<T[k]>
+}

@@ -5,7 +5,7 @@ import * as sinon from 'sinon'
 
 import {fakeEntry} from '../../utils/fake-contentful'
 
-import PreviewValidator, { IPreviewEnvironmentsResp, PreviewExpectation } from '../preview-validator'
+import PreviewValidator, { IPreviewEnvironmentsResp, PreviewExpectation } from './preview-validator'
 
 // tslint:disable:no-unused-expression
 

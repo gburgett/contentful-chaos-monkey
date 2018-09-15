@@ -17,7 +17,7 @@ describe('validator/contentful', () => {
 
         const subject = new ContentfulValidator({
           space: 'test',
-          client,
+          client: client as any,
           validators: [fakeValidator],
         })
 
@@ -33,13 +33,17 @@ describe('validator/contentful', () => {
 })
 
 function fakeClient(entry?: IEntry<any>) {
-  const space = {
+  const environment = {
     getEntry: sinon.stub().callsFake(((id) => {
       if (entry && id == entry.sys.id) {
         return Promise.resolve(entry)
       }
       return Promise.resolve()
     })),
+  }
+
+  const space = {
+    getEnvironment: sinon.stub().returns(Promise.resolve(environment)),
   }
 
   return {

@@ -12,7 +12,7 @@
     "build": "tsc",
     "prepare": "npm run build",
     "start": "ts-node --files src/index.ts",
-    "test": "TS_NODE_FILES=true mocha --require ts-node/register src/**/*.test.ts",
+    "test": "TS_NODE_FILES=true mocha --require ts-node/register 'src/**/*.test.ts'",
     "test-watch": "nodemon --watch src/ -e ts --exec 'npm run test || echo \"Tests failed!\"'"
   },
   "author": "",

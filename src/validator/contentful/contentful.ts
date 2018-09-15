@@ -1,5 +1,5 @@
-import { IManagementClient, Space } from 'contentful-management'
-import { ILogger } from '../../logger'
+import { Environment, IManagementClient, Space } from 'contentful-management'
+import { ILogger, QuietLogger } from '../../logger'
 import { AsyncMap } from '../../utils'
 import SequentialAsyncList from '../../utils/sequential-async-list'
 import { IExpectation, IExpectationMap, IValidator } from '../types'
@@ -19,9 +19,11 @@ const VALIDATORS = [
 export default class ContentfulValidator {
   private validators: IValidator[]
   private space: Space
+  private logger: ILogger
 
   constructor(private readonly options: IOptions) {
     this.validators = options.validators || VALIDATORS.map((v) => new v(options))
+    this.logger = options.logger || QuietLogger
 
     this.inspect = this.inspect.bind(this)
     this.getSpace = this.getSpace.bind(this)
@@ -32,7 +34,7 @@ export default class ContentfulValidator {
     const env = await space.getEnvironment('master')
 
     return ids.reduce((map, id) => {
-      map[id] = this._runValidators(space, id)
+      map[id] = this._runValidators(env, id)
       return map
     }, {} as AsyncMap<IExpectationMap>)
   }
@@ -42,15 +44,15 @@ export default class ContentfulValidator {
       (this.space = await this.options.client.getSpace(this.options.space))
   }
 
-  private async _runValidators(space: Space, id: string) {
-    this.options.logger.debug(`getEntry`, id)
-    const entry = await space.getEntry(id)
+  private async _runValidators(env: { getEntry: Environment['getEntry'] }, id: string) {
+    this.logger.debug(`getEntry`, id)
+    const entry = await env.getEntry(id)
     if (!entry) {
-      this.options.logger.error(`Entry not found:`, id)
+      this.logger.error(`Entry not found:`, id)
       return []
     }
 
-    this.options.logger.debug(`validators`, this.validators)
+    this.logger.debug(`validators`, this.validators)
     return SequentialAsyncList.lift(this.validators)
         .flatMap((v) => v.buildExpectations(entry))
         .all()

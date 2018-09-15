@@ -45,7 +45,7 @@ declare module 'contentful-management' {
 
     delete(...params: any[]): Promise<any> 	
     update(...params: any[]): Promise<any> 	
-    getEnvironment(...params: any[]): Promise<any> 	
+    getEnvironment(id: string): Promise<Environment> 	
     getEnvironments(...params: any[]): Promise<any> 	
     createEnvironment(...params: any[]): Promise<any> 	
     createEnvironmentWithId(...params: any[]): Promise<any> 	
@@ -97,6 +97,16 @@ declare module 'contentful-management' {
     createUiExtensionWithId(...params: any[]): Promise<any> 	
     getEntrySnapshots(...params: any[]): Promise<any> 	
     getContentTypeSnapshots(...params: any[]): Promise<any>
+  }
+
+  export class Environment {
+   /**
+    * Gets an Entry
+    * 
+    * Warning: if you are using the select operator, when saving, any field that was not selected will be removed from your entry in the backend
+    */
+   getEntry(id: string, query?: JsonObject): Promise<Entry<any>>
+
   }
 
   // tslint:disable-next-line:interface-over-type-literal

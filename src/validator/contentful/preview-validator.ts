@@ -2,7 +2,7 @@ import { IEntry, IManagementClient } from 'contentful-management'
 import * as _ from 'lodash'
 import * as requestLib from 'request'
 import { Response } from 'request'
-import { ILogger } from '../../logger'
+import { ILogger, QuietLogger } from '../../logger'
 import { AsyncRequest } from '../../utils/async-request'
 import SequentialAsyncList from '../../utils/sequential-async-list'
 import { IExpectation, IValidator } from '../types'
@@ -30,7 +30,7 @@ export default class PreviewValidator implements IValidator {
   constructor({ client, space, logger }: IOptions) {
     this.client = client
     this.space = space
-    this.logger = logger
+    this.logger = logger || QuietLogger
 
     this.getPreviewUrls = this.getPreviewUrls.bind(this)
   }

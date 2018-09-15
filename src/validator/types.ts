@@ -15,3 +15,7 @@ export interface IValidationResult {
   readonly ok: boolean
   readonly error?: Error
 }
+
+export interface IExpectationMap {
+  [id: string]: IExpectation[]
+}
