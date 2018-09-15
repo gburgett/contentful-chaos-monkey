@@ -36,7 +36,9 @@ export default class SequentialAsyncList<T> {
    * The function is only invoked after the previous promise in sequence completes.
    */
   public map<U>(fn: (item: T, index?: number) => U & NotPromise<U>): SequentialAsyncList<U> {
-    return this.flatMap((item, idx) => Promise.resolve(fn(item, idx)))
+    return new SequentialAsyncList<U>(
+      this._bind((item, idx) => Promise.resolve(fn(item, idx))),
+    )
   }
 
   /**
@@ -44,9 +46,7 @@ export default class SequentialAsyncList<T> {
    * to get the result.
    */
   public async forEach(fn: (item: T, index?: number) => Promise<any>): Promise<void> {
-    const result = this.flatMap(fn)
-    const arr = (await result.promises)
-    return arr[arr.length - 1]
+    await this._bind(fn)
   }
 
   /**
@@ -54,11 +54,10 @@ export default class SequentialAsyncList<T> {
    */
   public async reduce<U>(fn: (aggregate: U, current: T, index?: number) => Promise<U>, initial?: U): Promise<U> {
     let aggregate = initial
-    const result = this.flatMap((item, index) => (
-      fn(aggregate, item, index).then((val) => aggregate = val)
+    await this._bind(async (item, index) => (
+      aggregate = await fn(aggregate, item, index)
     ))
-    const arr = (await result.promises)
-    return arr[arr.length - 1]
+    return aggregate
   }
 
   /**
