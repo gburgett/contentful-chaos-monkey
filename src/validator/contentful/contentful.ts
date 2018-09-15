@@ -55,6 +55,5 @@ export default class ContentfulValidator {
     this.logger.debug(`validators`, this.validators)
     return SequentialAsyncList.lift(this.validators)
         .flatMap((v) => v.buildExpectations(entry))
-        .all()
   }
 }

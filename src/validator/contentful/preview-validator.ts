@@ -38,7 +38,7 @@ export default class PreviewValidator implements IValidator {
   public async buildExpectations(entry: IEntry<any>): Promise<IExpectation[]> {
     const generators = await this.getPreviewUrls(entry.sys.contentType.sys.id)
 
-    return await SequentialAsyncList.lift(generators)
+    return SequentialAsyncList.lift(generators)
       .flatMap(async (g) => {
         const url = g(entry)
         this.logger.debug(`GET ${url}`)
@@ -48,7 +48,7 @@ export default class PreviewValidator implements IValidator {
         }
 
         return new PreviewExpectation(url, entry, resp)
-      }).all()
+      })
   }
 
   private async getPreviewUrls(contentType: string) {

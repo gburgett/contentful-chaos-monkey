@@ -64,9 +64,10 @@ export default class SequentialAsyncList<T> {
   /**
    * Equivalent to Promise.all
    */
-  public async all(): Promise<T[]> {
-    // It's only the calculation methods that need to happen in sequence
-    return Promise.all(await this.promises)
+  public async then<TResult1 = T[], TResult2 = never>(
+    onfulfilled?: ((value: T[]) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): Promise<TResult1 | TResult2> {
+    return this.promises.then(onfulfilled, onrejected)
   }
 
   /**
@@ -74,7 +75,7 @@ export default class SequentialAsyncList<T> {
    *
    * Applies the transform function after all promises from prior transformations have finished.
    */
-  private async _bind<U>(
+  protected async _bind<U>(
     fn: (item: T, index?: number) => BindResult<U>,
     ): Promise<U[]> {
 
